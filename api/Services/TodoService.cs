@@ -66,14 +66,27 @@ public class TodoService : ITodoService
 
     public async Task<bool> DeleteTodoAsync(Guid id)
     {
-        var todo = await this.GetTodoByIdAsync(id);
+        var todoToDelete = await this.GetTodoByIdAsync(id);
 
-        if (todo is null)
+        if (todoToDelete is null)
         {
             return false;
         }
+        
+        await _repository.DeleteTodoAsync(todoToDelete);
 
-        await _repository.DeleteTodoAsync(todo);
+        var allTodos = await _repository.GetAllTodosAsync();
+
+        foreach (var todo in allTodos)
+        {
+            if (todo.Position > todoToDelete.Position)
+            {
+                todo.Position -= 1;
+            }
+        }
+
+        await _repository.UpdateTodoPositionsAsync(allTodos);
+        
         return true;
     }
 
