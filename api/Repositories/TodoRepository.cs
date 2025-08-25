@@ -41,4 +41,10 @@ public class TodoRepository : ITodoRepository
         _context.Todos.Remove(todo);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateTodoPositionsAsync(IEnumerable<Todo> todos)
+    {
+        _context.Todos.UpdateRange(todos);
+        await _context.SaveChangesAsync();
+    }
 }

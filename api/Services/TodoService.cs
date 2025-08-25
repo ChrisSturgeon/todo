@@ -1,3 +1,4 @@
+using api.DTOs;
 using api.Models;
 using api.Repositories.Interfaces;
 using api.Services.Interfaces;
@@ -15,7 +16,9 @@ public class TodoService : ITodoService
     
     public async Task<IEnumerable<Todo>> GetAllTodosAsync()
     {
-        return await _repository.GetAllTodosAsync();
+        var allTodos = await _repository.GetAllTodosAsync();
+
+        return allTodos.OrderBy(t => t.Position);
     }
 
     public async Task<Todo?> GetTodoByIdAsync(Guid id)
@@ -33,7 +36,7 @@ public class TodoService : ITodoService
             Name = name,
             Description = description,
             Completed = false,
-            Position = currentTodos.Count() + 1,
+            Position = currentTodos.Count(),
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -72,5 +75,24 @@ public class TodoService : ITodoService
 
         await _repository.DeleteTodoAsync(todo);
         return true;
+    }
+
+    public async Task<IEnumerable<Todo>> ReorderTodosAsync(IEnumerable<TodoReorderDto> reorderDtos)
+    {
+        var allTodos = await GetAllTodosAsync();
+
+        foreach (var dto in reorderDtos)
+        {
+            var todo = allTodos.FirstOrDefault(t => t.Id == dto.Id);
+
+            if (todo is null) continue;
+            
+            todo.Position = dto.Position;
+            todo.UpdatedAt = DateTimeOffset.UtcNow;
+        }
+
+        await _repository.UpdateTodoPositionsAsync(allTodos);
+
+        return allTodos.OrderBy(t => t.Position);
     }
 }
