@@ -46,7 +46,7 @@ public class TodoService : ITodoService
         return newTodo;
     }
 
-    public async Task<bool> UpdateTodoAsync(Guid id, string? name, string? description, bool? isCompleted)
+    public async Task<bool> UpdateTodoAsync(Guid id, string? name, string? description, bool? completed)
     {
         var todo = await this.GetTodoByIdAsync(id);
 
@@ -57,7 +57,7 @@ public class TodoService : ITodoService
 
         todo.Name = name ?? todo.Name;
         todo.Description = description ?? todo.Description;
-        todo.Completed = isCompleted ?? todo.Completed;
+        todo.Completed = completed ?? todo.Completed;
         todo.UpdatedAt = DateTimeOffset.UtcNow;
 
         await _repository.UpdateTodoAsync(todo);

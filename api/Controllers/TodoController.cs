@@ -74,7 +74,7 @@ public class TodoController : ControllerBase
     [HttpPatch("{id:guid}")]
     public async Task<ActionResult> UpdateTodo(Guid id, [FromBody] UpdateTodoDto dto)
     {
-        var updatedTodo = await _service.UpdateTodoAsync(id, dto.Name, dto.Description, dto.IsCompleted);
+        var updatedTodo = await _service.UpdateTodoAsync(id, dto.Name, dto.Description, dto.Completed);
 
         return updatedTodo ? NoContent() : NotFound();
     }
@@ -93,7 +93,7 @@ public class TodoController : ControllerBase
     {
         if (reorderDtos is null || !reorderDtos.Any())
         {
-            return BadRequest("No todos provided.");
+            return BadRequest("Todos is empty.");
         }
 
         var updatedTodos = await _service.ReorderTodosAsync(reorderDtos);
@@ -104,6 +104,7 @@ public class TodoController : ControllerBase
             Name = t.Name,
             Description = t.Description,
             Completed = t.Completed,
+            Position = t.Position,
             CreatedAt = t.CreatedAt,
             UpdatedAt = t.UpdatedAt
         });
