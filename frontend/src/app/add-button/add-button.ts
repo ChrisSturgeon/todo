@@ -1,18 +1,20 @@
 import { Component, inject } from '@angular/core';
-import { TodoService } from '../todos/todo';
+import { TodoService } from '../todo-service/todo.service';
+import { Observable } from 'rxjs';
+import { Todo } from '../../types/api/todo.model';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-add-button',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './add-button.html',
   styleUrl: './add-button.css',
 })
 export class AddButton {
   private todoService: TodoService = inject(TodoService);
+  public todosList$: Observable<Todo[]>;
 
-  public addRandomTodo() {
-    this.todoService.createTodo(Date.now().toString()).subscribe(() => {
-      this.todoService.triggerRefresh();
-    });
+  constructor() {
+    this.todosList$ = this.todoService.todos$;
   }
 }

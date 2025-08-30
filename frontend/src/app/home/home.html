@@ -1,13 +1,19 @@
-<app-add-button />
-
 <app-new-todo-form />
 
 <section>
   <h1>Todos</h1>
 
+  @if (this.isLoading) {
+  <p>Loading todos</p>
+  } @else if (this.isError) {
+  <p>An error occurred retrieving todos</p>
+  } @else {
   <ul cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
     @for (todo of this.todos; track todo.id) {
     <app-draggable [todo]="todo" />
+    } @empty {
+    <li>You have no todos</li>
     }
   </ul>
+  }
 </section>

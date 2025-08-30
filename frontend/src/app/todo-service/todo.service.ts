@@ -1,7 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, Observable, delay } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  delay,
+  shareReplay,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import type { Todo } from '../../types/api/todo.model';
 import { ReorderTodoDto } from '../../types/api/reorderTodoDto.model';
 
@@ -21,6 +28,13 @@ export class TodoService {
   public triggerRefresh() {
     this.refreshTrigger$.next();
   }
+
+  public todos$: Observable<Todo[]> = this.refreshTrigger$.pipe(
+    startWith(undefined),
+    switchMap(() => this.httpClient.get<Todo[]>(this.baseUrl)),
+    shareReplay(1),
+    delay(150)
+  );
 
   /**
    * Retrieves all todos from the API.

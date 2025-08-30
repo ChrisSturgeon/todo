@@ -1,1 +1,7 @@
-<button (click)="addRandomTodo()">Add new todo</button>
+<section>
+  <ul>
+    @for (todo of todosList$ | async; track todo.id) {
+    <li>{{ todo.id }}</li>
+    }
+  </ul>
+</section>

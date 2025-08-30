@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TodoService } from '../todos/todo';
+import { TodoService } from '../todo-service/todo.service';
 
 @Component({
   selector: 'app-new-todo-form',
@@ -21,6 +21,7 @@ export class NewTodoForm {
     if (todoName && todoName.trim().length > 0) {
       this.todoService.createTodo(todoName).subscribe(() => {
         this.todoService.triggerRefresh();
+        this.newTodoForm.reset();
       });
     }
   }
