@@ -1,15 +1,13 @@
 <app-add-button />
 
+<app-new-todo-form />
+
 <section>
   <h1>Todos</h1>
 
-  <ul cdkDropList class="example-list">
-    @for (todo of this.todos$ | async; track todo.id) {
-    <app-draggable [todoDate]="todo.name" />
+  <ul cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    @for (todo of this.todos; track todo.id) {
+    <app-draggable [todo]="todo" />
     }
   </ul>
 </section>
-
-<!-- <section>
-  <app-draggable todoName="Test" />
-</section> -->

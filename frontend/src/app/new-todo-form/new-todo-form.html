@@ -1,0 +1,8 @@
+<section aria-labelledby="new-todo-heading">
+  <h2 id="new-todo-heading">Add new todo</h2>
+  <form [formGroup]="newTodoForm" (submit)="submitNewTodo()">
+    <label for="name">Name</label>
+    <input id="name" type="text" formControlName="name" />
+    <button type="submit">Add</button>
+  </form>
+</section>

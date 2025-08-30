@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, delay } from 'rxjs';
 import type { Todo } from '../../types/api/todo.model';
+import { ReorderTodoDto } from '../../types/api/reorderTodoDto.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class TodoService {
 
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
-  get refresh$() {
+  public get refresh$() {
     return this.refreshTrigger$.asObservable();
   }
 
@@ -36,5 +37,33 @@ export class TodoService {
    */
   public createTodo(todoName: string): Observable<Todo> {
     return this.httpClient.post<Todo>(this.baseUrl, { name: todoName });
+  }
+
+  /**
+   * Deletes a todo.
+   * @param id The Id of the todo to delete.
+   * @returns An Observable that emits the response of the API after deleting the todo.
+   */
+  public deleteTodo(id: string): Observable<Todo> {
+    return this.httpClient.delete<Todo>(`${this.baseUrl}/${id}`);
+  }
+
+  /**
+   * Calls the API reorder todos endpoint.
+   * @param todos An array of the reordered todos.
+   * @returns Returns an Observable that emits the response of the API after reordering the todos.
+   */
+  public reorderTodos(todos: Todo[]): Observable<Todo[]> {
+    let reorderedTodos: ReorderTodoDto[] = todos.map((todo, index) => {
+      return {
+        id: todo.id,
+        position: index,
+      };
+    });
+
+    return this.httpClient.put<Todo[]>(
+      `${this.baseUrl}/reorder`,
+      reorderedTodos
+    );
   }
 }

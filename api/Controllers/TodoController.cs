@@ -95,20 +95,9 @@ public class TodoController : ControllerBase
         {
             return BadRequest("Todos is empty.");
         }
-
-        var updatedTodos = await _service.ReorderTodosAsync(reorderDtos);
-
-        var result = updatedTodos.Select(t => new Todo
-        {
-            Id = t.Id,
-            Name = t.Name,
-            Description = t.Description,
-            Completed = t.Completed,
-            Position = t.Position,
-            CreatedAt = t.CreatedAt,
-            UpdatedAt = t.UpdatedAt
-        });
-
-        return Ok(result);
+        
+        await _service.ReorderTodosAsync(reorderDtos);
+        
+        return NoContent();
     }
 }

@@ -1,1 +1,3 @@
-<div cdkDrag class="example-box">{{ this.todoDate().toDateString() }}</div>
+<div cdkDrag class="example-box">
+  {{ todo().name }} <app-delete-button [todoId]="todo().id" />
+</div>

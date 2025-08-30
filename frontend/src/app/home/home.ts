@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
 import { Todo } from '../../types/api/todo.model';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { TodoService } from '../todos/todo';
-import { Observable, Subscription, pipe, startWith, switchMap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { Subscription, startWith, switchMap } from 'rxjs';
 import { Draggable } from '../draggable/draggable';
 import {
   CdkDragDrop,
@@ -10,27 +9,42 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { AddButton } from '../add-button/add-button';
+import { NewTodoForm } from '../new-todo-form/new-todo-form';
 
 @Component({
   selector: 'app-home',
-  imports: [AsyncPipe, Draggable, CdkDropList, AddButton],
+  imports: [Draggable, CdkDropList, AddButton, NewTodoForm],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnInit, OnDestroy {
   private todoService: TodoService = inject(TodoService);
-  public todos$: Observable<Todo[]>;
+  private subscription = new Subscription();
 
-  constructor() {
-    this.todos$ = this.todoService.refresh$.pipe(
-      startWith(undefined),
-      switchMap(() => this.todoService.fetchTodos())
+  public todos: Todo[] = [];
+
+  ngOnInit(): void {
+    this.subscription.add(
+      this.todoService.refresh$
+        .pipe(
+          startWith(undefined),
+          switchMap(() => this.todoService.fetchTodos())
+        )
+        .subscribe((todos) => {
+          this.todos = todos;
+        })
     );
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
   public drop(event: CdkDragDrop<Todo[]>) {
-    this.todos$.subscribe((todos) => {
-      moveItemInArray(todos, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.todos, event.previousIndex, event.currentIndex);
+
+    this.todoService.reorderTodos(this.todos).subscribe(() => {
+      this.todoService.triggerRefresh();
     });
   }
 }
