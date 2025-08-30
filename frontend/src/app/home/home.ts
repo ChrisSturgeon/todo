@@ -1,12 +1,19 @@
 import { Component, inject } from '@angular/core';
 import { Todo } from '../../types/api/todo.model';
 import { TodoService } from '../todos/todo';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, pipe, startWith, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { Draggable } from '../draggable/draggable';
+import {
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { AddButton } from '../add-button/add-button';
 
 @Component({
   selector: 'app-home',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, Draggable, CdkDropList, AddButton],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -15,6 +22,15 @@ export class Home {
   public todos$: Observable<Todo[]>;
 
   constructor() {
-    this.todos$ = this.todoService.fetchTodos();
+    this.todos$ = this.todoService.refresh$.pipe(
+      startWith(undefined),
+      switchMap(() => this.todoService.fetchTodos())
+    );
+  }
+
+  public drop(event: CdkDragDrop<Todo[]>) {
+    this.todos$.subscribe((todos) => {
+      moveItemInArray(todos, event.previousIndex, event.currentIndex);
+    });
   }
 }

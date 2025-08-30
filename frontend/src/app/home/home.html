@@ -1,13 +1,15 @@
+<app-add-button />
+
 <section>
   <h1>Todos</h1>
-  @for (todo of this.todos$ | async; track todo.id) {
-  <article>
-    <header>
-      <h2>{{ todo.name }}</h2>
-      @if (todo.description) {
-      <p>This is the description</p>
-      }
-    </header>
-  </article>
-  }
+
+  <ul cdkDropList class="example-list">
+    @for (todo of this.todos$ | async; track todo.id) {
+    <app-draggable [todoDate]="todo.name" />
+    }
+  </ul>
 </section>
+
+<!-- <section>
+  <app-draggable todoName="Test" />
+</section> -->
