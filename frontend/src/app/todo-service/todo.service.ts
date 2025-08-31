@@ -32,8 +32,7 @@ export class TodoService {
   public todos$: Observable<Todo[]> = this.refreshTrigger$.pipe(
     startWith(undefined),
     switchMap(() => this.httpClient.get<Todo[]>(this.baseUrl)),
-    shareReplay(1),
-    delay(150)
+    shareReplay(1)
   );
 
   /**
@@ -51,6 +50,10 @@ export class TodoService {
    */
   public createTodo(todoName: string): Observable<Todo> {
     return this.httpClient.post<Todo>(this.baseUrl, { name: todoName });
+  }
+
+  public updateTodo(id: string, todo: Partial<Todo>) {
+    return this.httpClient.patch(`${this.baseUrl}/${id}`, todo);
   }
 
   /**

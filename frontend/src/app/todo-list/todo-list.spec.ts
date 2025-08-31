@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Draggable } from './draggable';
+import { TodoList } from './todo-list';
 
-describe('Draggable', () => {
-  let component: Draggable;
-  let fixture: ComponentFixture<Draggable>;
+describe('TodoList', () => {
+  let component: TodoList;
+  let fixture: ComponentFixture<TodoList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Draggable]
+      imports: [TodoList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Draggable);
+    fixture = TestBed.createComponent(TodoList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

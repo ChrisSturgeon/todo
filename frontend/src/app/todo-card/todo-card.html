@@ -1,3 +1,4 @@
 <div cdkDrag class="example-box">
+  <input type="checkbox" (change)="toggleDone()" [checked]="todo().completed" />
   {{ todo().name }} <app-delete-button [todoId]="todo().id" />
 </div>

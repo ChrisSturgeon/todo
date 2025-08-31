@@ -55,8 +55,8 @@ public class TodoService : ITodoService
             return false;
         }
 
-        todo.Name = name ?? todo.Name;
-        todo.Description = description ?? todo.Description;
+        todo.Name = string.IsNullOrWhiteSpace(name) ? todo.Name : name;
+        todo.Description = string.IsNullOrWhiteSpace(description) ? todo.Description : description;
         todo.Completed = completed ?? todo.Completed;
         todo.UpdatedAt = DateTimeOffset.UtcNow;
 
