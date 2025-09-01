@@ -96,7 +96,7 @@ public class TodoController : ControllerBase
             return BadRequest("Todos is empty.");
         }
         
-        await _service.ReorderTodosAsync(reorderDtos);
+        var reordered = await _service.ReorderTodosAsync(reorderDtos);
         
         return NoContent();
     }

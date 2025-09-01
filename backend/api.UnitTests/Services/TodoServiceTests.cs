@@ -1,4 +1,5 @@
 using api.Models;
+using api.DTOs;
 using api.Repositories.Interfaces;
 using api.Services;
 using Moq;
@@ -461,5 +462,128 @@ public class TodoServiceTests
         var result = await service.DeleteTodoAsync(testTodoId);
         
         Assert.True(result);
+    }
+
+    [Fact]
+    public async Task DeleteTodoAsync_ReordersPositionForRemainingTodos_WhenNecessary()
+    {
+        var testTodoId = new Guid("4d3c2af0-ca58-4358-8c98-ceafa468cada");
+        
+        var todos = new List<Todo>
+        {
+            new Todo { Id = testTodoId, Name = "First", Position = 0 },
+            new Todo { Name = "Second", Position = 1 },
+            new Todo { Name = "Third", Position = 2 },
+        };
+
+        var mockRepo = new Mock<ITodoRepository>();
+        mockRepo.Setup(r => r.GetTodoByIdAsync(testTodoId))
+            .ReturnsAsync(todos.FirstOrDefault(t => t.Id == testTodoId));
+        
+        mockRepo.Setup(r => r.GetAllTodosAsync())
+            .ReturnsAsync(todos);
+
+        mockRepo.Setup(r => r.DeleteTodoAsync(It.IsAny<Todo>()))
+            .Callback<Todo>(t => todos.Remove(t))
+            .Returns(Task.CompletedTask);
+
+        IEnumerable<Todo>? updatedTodos = null;
+        mockRepo.Setup(r => r.UpdateTodoPositionsAsync(It.IsAny<IEnumerable<Todo>>()))
+            .Callback<IEnumerable<Todo>>(l => updatedTodos = l)
+            .Returns(Task.CompletedTask);
+
+        var service = new TodoService(mockRepo.Object);
+        var result = await service.DeleteTodoAsync(testTodoId);
+        
+        Assert.True(result);
+        Assert.NotNull(updatedTodos);
+        Assert.Collection(updatedTodos,
+            item =>
+            {
+                Assert.Equal("Second", item.Name);
+                Assert.Equal(0, item.Position);
+            },
+            item =>
+            {
+                Assert.Equal("Third", item.Name);
+                Assert.Equal(1, item.Position);
+            });
+    }
+
+    [Fact]
+    public async Task ReorderTodosAsync_ReturnsFalseWhenNoTodosExist()
+    {
+        var todo1Guid = new Guid("4d3c2af0-ca58-4358-8c98-ceafa468cada");
+        var todo2Guid = new Guid("7faf2283-162f-4d65-adb4-288f4cd23d41");
+        var todo3Guid = new Guid("790eeae5-ce08-43ef-ba03-ebc55f00cd10");
+        
+        var reorderedTodos = new List<TodoReorderDto>
+        {
+            new TodoReorderDto { Id = todo1Guid, Position = 2 },
+            new TodoReorderDto { Id = todo2Guid, Position = 0 },
+            new TodoReorderDto { Id = todo3Guid, Position = 1 },
+        };
+        
+        var mockRepo = new Mock<ITodoRepository>();
+        mockRepo.Setup(r => r.GetAllTodosAsync())
+            .ReturnsAsync(new List<Todo>());
+
+        var service = new TodoService(mockRepo.Object);
+        var result = await service.ReorderTodosAsync(reorderedTodos);
+        
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task ReorderTodosAsync_ReordersTheTodos()
+    {
+        var todo1Guid = new Guid("4d3c2af0-ca58-4358-8c98-ceafa468cada");
+        var todo2Guid = new Guid("7faf2283-162f-4d65-adb4-288f4cd23d41");
+        var todo3Guid = new Guid("790eeae5-ce08-43ef-ba03-ebc55f00cd10");
+        
+        var todos = new List<Todo>
+        {
+            new Todo { Id = todo1Guid, Name = "Foo", Position = 0 },
+            new Todo { Id = todo2Guid, Name = "Bar", Position = 1 },
+            new Todo { Id = todo3Guid, Name = "Baz", Position = 2 },
+        };
+        
+        var updatedTodos = new List<TodoReorderDto>
+        {
+            new TodoReorderDto { Id = todo1Guid, Position = 2 },
+            new TodoReorderDto { Id = todo2Guid, Position = 0 },
+            new TodoReorderDto { Id = todo3Guid, Position = 1 },
+        };
+
+
+        var mockRepo = new Mock<ITodoRepository>();
+        mockRepo.Setup(r => r.GetAllTodosAsync())
+            .ReturnsAsync(todos);
+
+        IEnumerable<Todo>? reorderedTodos = null;
+
+        mockRepo.Setup(r => r.UpdateTodoPositionsAsync(It.IsAny<IEnumerable<Todo>>()))
+            .Callback<IEnumerable<Todo>>(l => reorderedTodos = l)
+            .Returns(Task.CompletedTask);
+
+        var service = new TodoService(mockRepo.Object);
+        var result = await service.ReorderTodosAsync(updatedTodos);
+        
+        Assert.True(result);
+        Assert.Collection(reorderedTodos, item =>
+        {
+            Assert.Equal(todo2Guid, item.Id);
+            Assert.Equal(0, item.Position);
+        },
+            item =>
+        {
+            Assert.Equal(todo3Guid, item.Id);
+            Assert.Equal(1, item.Position);
+        }, 
+            item =>
+        {
+            Assert.Equal(todo1Guid, item.Id);
+            Assert.Equal(2, item.Position);
+        });
     }
 }

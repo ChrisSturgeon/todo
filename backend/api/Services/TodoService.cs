@@ -90,9 +90,14 @@ public class TodoService : ITodoService
         return true;
     }
 
-    public async Task<IEnumerable<Todo>> ReorderTodosAsync(IEnumerable<TodoReorderDto> reorderDtos)
+    public async Task<bool> ReorderTodosAsync(IEnumerable<TodoReorderDto> reorderDtos)
     {
         var allTodos = await GetAllTodosAsync();
+
+        if (!allTodos.Any())
+        {
+            return false;
+        }
 
         foreach (var dto in reorderDtos)
         {
@@ -106,6 +111,6 @@ public class TodoService : ITodoService
 
         await _repository.UpdateTodoPositionsAsync(allTodos);
 
-        return allTodos.OrderBy(t => t.Position);
+        return true;
     }
 }
