@@ -89,15 +89,10 @@ public class TodoController : ControllerBase
 
     [HttpPut("reorder")]
     public async Task<ActionResult<IEnumerable<TodoDto>>> ReorderTodos(
-        [FromBody] IEnumerable<TodoReorderDto> reorderDtos)
+        [FromBody] ReorderTodosDto request)
     {
-        if (reorderDtos is null || !reorderDtos.Any())
-        {
-            return BadRequest("Todos is empty.");
-        }
-        
-        var reordered = await _service.ReorderTodosAsync(reorderDtos);
-        
-        return NoContent();
+        var success = await _service.ReorderTodosAsync(request.Todos);
+
+        return success ? NoContent() : NotFound();
     }
 }

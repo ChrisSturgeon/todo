@@ -570,6 +570,7 @@ public class TodoServiceTests
         var result = await service.ReorderTodosAsync(updatedTodos);
         
         Assert.True(result);
+        Assert.NotNull(reorderedTodos);
         Assert.Collection(reorderedTodos, item =>
         {
             Assert.Equal(todo2Guid, item.Id);

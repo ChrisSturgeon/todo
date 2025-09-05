@@ -11,6 +11,7 @@ import {
 } from 'rxjs';
 import type { Todo } from '../../types/api/todo.model';
 import { ReorderTodoDto } from '../../types/api/reorderTodoDto.model';
+import { ReorderTodosDto } from '../../types/api/reorderTodosDto.model';
 
 @Injectable({
   providedIn: 'root',
@@ -70,7 +71,7 @@ export class TodoService {
    * @param todos An array of the reordered todos.
    * @returns Returns an Observable that emits the response of the API after reordering the todos.
    */
-  public reorderTodos(todos: Todo[]): Observable<Todo[]> {
+  public reorderTodos(todos: Todo[]): Observable<ReorderTodosDto> {
     let reorderedTodos: ReorderTodoDto[] = todos.map((todo, index) => {
       return {
         id: todo.id,
@@ -78,9 +79,8 @@ export class TodoService {
       };
     });
 
-    return this.httpClient.put<Todo[]>(
-      `${this.baseUrl}/reorder`,
-      reorderedTodos
-    );
+    return this.httpClient.put<ReorderTodosDto>(`${this.baseUrl}/reorder`, {
+      todos: reorderedTodos,
+    });
   }
 }
