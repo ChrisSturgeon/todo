@@ -44,11 +44,19 @@ export class TodoList implements OnInit, OnDestroy {
   }
 
   public drop(event: CdkDragDrop<Todo[]>) {
+    const originalOrder = [...this.todos];
+
     moveItemInArray(this.todos, event.previousIndex, event.currentIndex);
 
-    this.todoService.reorderTodos(this.todos).subscribe(() => {
-      this.isLoading = true;
-      this.todoService.triggerRefresh();
+    this.todoService.reorderTodos(this.todos).subscribe({
+      next: () => {
+        this.isLoading = true;
+        this.todoService.triggerRefresh();
+      },
+      error: () => {
+        console.error('Error reordering todos');
+        this.todos = originalOrder;
+      },
     });
   }
 }
