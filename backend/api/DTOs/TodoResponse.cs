@@ -1,6 +1,6 @@
 namespace api.DTOs;
 
-public class TodoDto
+public class TodoResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

@@ -90,7 +90,7 @@ public class TodoService : ITodoService
         return true;
     }
 
-    public async Task<bool> ReorderTodosAsync(IEnumerable<TodoReorderDto> reorderDtos)
+    public async Task<bool> ReorderTodosAsync(IEnumerable<ReorderTodoDto> reorderDtos)
     {
         var allTodos = await GetAllTodosAsync();
 

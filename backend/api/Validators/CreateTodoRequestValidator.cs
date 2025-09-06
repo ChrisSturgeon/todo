@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace api.Validators;
 
-public class CreateTodoDtoValidator : AbstractValidator<CreateTodoDto>
+public class CreateTodoRequestValidator : AbstractValidator<CreateTodoRequest>
 {
-    public CreateTodoDtoValidator()
+    public CreateTodoRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()

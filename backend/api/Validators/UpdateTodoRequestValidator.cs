@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace api.Validators;
 
-public class UpdateTodoValidator : AbstractValidator<UpdateTodoDto>
+public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoRequest>
 {
-    public UpdateTodoValidator()
+    public UpdateTodoRequestValidator()
     {
         RuleFor(u => u.Name)
             .NotEmpty()
@@ -15,6 +15,7 @@ public class UpdateTodoValidator : AbstractValidator<UpdateTodoDto>
 
         RuleFor(u => u.Description)
             .Length(3, 100)
+            .When(d => !string.IsNullOrWhiteSpace(d.Description))
             .WithMessage("Todo description must be between 3 and 100 characters");
     }
 }

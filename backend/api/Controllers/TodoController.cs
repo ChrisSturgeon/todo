@@ -17,23 +17,30 @@ public class TodoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoDto>>> GetAllTodos()
+    public async Task<ActionResult<TodosResponse>> GetAllTodos()
     {
         var todos = await _service.GetAllTodosAsync();
-        return Ok(todos.Select(t => new TodoDto()
+
+        var response = new TodosResponse()
         {
-            Id = t.Id,
-            Name = t.Name,
-            Description = t.Description,
-            Completed = t.Completed,
-            Position = t.Position,
-            CreatedAt = t.CreatedAt,
-            UpdatedAt = t.UpdatedAt
-        }));
+            Items = todos.Select(t => new TodoResponse()
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Description = t.Description,
+                Completed = t.Completed,
+                Position = t.Position,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt
+            }),
+            TotalCount = todos.Count(),
+        };
+         
+        return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TodoDto?>> GetTodoById(Guid id)
+    public async Task<ActionResult<TodoResponse?>> GetTodoById(Guid id)
     {
         var todo = await _service.GetTodoByIdAsync(id);
 
@@ -42,7 +49,7 @@ public class TodoController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new TodoDto
+        return Ok(new TodoResponse
         {
             Id = todo.Id,
             Name = todo.Name,
@@ -55,11 +62,11 @@ public class TodoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TodoDto>> CreateTodo([FromBody] CreateTodoDto dto)
+    public async Task<ActionResult<TodoResponse>> CreateTodo([FromBody] CreateTodoRequest request)
     {
-        var todo = await _service.CreateTodoAsync(dto.Name, dto.Description ?? string.Empty);
+        var todo = await _service.CreateTodoAsync(request.Name, request.Description ?? string.Empty);
 
-        return CreatedAtAction(nameof(GetTodoById), new { id = todo.Id }, new TodoDto()
+        return CreatedAtAction(nameof(GetTodoById), new { id = todo.Id }, new TodoResponse()
         {
             Id = todo.Id,
             Name = todo.Name,
@@ -72,9 +79,9 @@ public class TodoController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
-    public async Task<ActionResult> UpdateTodo(Guid id, [FromBody] UpdateTodoDto dto)
+    public async Task<ActionResult> UpdateTodo(Guid id, [FromBody] UpdateTodoRequest request)
     {
-        var updatedTodo = await _service.UpdateTodoAsync(id, dto.Name, dto.Description, dto.Completed);
+        var updatedTodo = await _service.UpdateTodoAsync(id, request.Name, request.Description, request.Completed);
 
         return updatedTodo ? NoContent() : NotFound();
     }
@@ -88,8 +95,8 @@ public class TodoController : ControllerBase
     }
 
     [HttpPut("reorder")]
-    public async Task<ActionResult<IEnumerable<TodoDto>>> ReorderTodos(
-        [FromBody] ReorderTodosDto request)
+    public async Task<ActionResult<IEnumerable<TodoResponse>>> ReorderTodos(
+        [FromBody] ReorderTodosRequest request)
     {
         var success = await _service.ReorderTodosAsync(request.Todos);
 
