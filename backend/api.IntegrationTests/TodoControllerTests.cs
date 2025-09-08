@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 using api.Data;
 using api.DTOs;
 using api.Models;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
@@ -11,6 +13,7 @@ namespace api.IntegrationTests;
 
 public class TodoControllerTests : IAsyncLifetime
 {
+    private const string TodosBaseUrl = "/api/todo";
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:16.1")
         .WithDatabase("test_db")
@@ -52,7 +55,7 @@ public class TodoControllerTests : IAsyncLifetime
             Completed = false,
             Position = 0,
             CreatedAt = new DateTimeOffset(2025, 09, 06, 10, 55, 12, TimeSpan.Zero),
-            UpdatedAt = new DateTimeOffset(2025, 09, 06, 10, 55, 12, TimeSpan.Zero),
+            UpdatedAt = new DateTimeOffset(2025, 09, 07, 12, 12, 38, TimeSpan.Zero),
         });
 
         dbContext.Todos.Add(new Todo()
@@ -74,10 +77,21 @@ public class TodoControllerTests : IAsyncLifetime
     {
         await SeedDatabaseAsync();
 
-        var response = await _client.GetAsync("/api/Todo");
+        var response = await _client.GetAsync(TodosBaseUrl);
 
         response.EnsureSuccessStatusCode();
-        Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("utf-8", response.Content.Headers.ContentType?.CharSet);
+    }
+
+    [Fact]
+    public async Task GetAllTodos_ReturnsEmptyListWhenDbEmpty()
+    {
+        var responseBody = await _client.GetFromJsonAsync<TodosResponse>(TodosBaseUrl);
+
+        Assert.NotNull(responseBody);
+        Assert.Equal([], responseBody.Items);
+        Assert.Equal(0, responseBody.TotalCount);
     }
 
     [Fact]
@@ -85,11 +99,15 @@ public class TodoControllerTests : IAsyncLifetime
     {
         await SeedDatabaseAsync();
         
-        var responseBody = await _client.GetFromJsonAsync<TodosResponse>("/api/todo");
+        var responseBody = await _client.GetFromJsonAsync<TodosResponse>(TodosBaseUrl);
 
         Assert.NotNull(responseBody);
         Assert.Equal(2, responseBody.Items.Count());
         Assert.Equal(2, responseBody.TotalCount);
+
+        var items = responseBody.Items.ToList();
+        Assert.Contains(items, t => t is { Name: "Walk the dog", Completed: false });
+        Assert.Contains(items, t => t is { Name: "Clean the house", Completed: true });
     }
 
     [Fact]
@@ -98,14 +116,13 @@ public class TodoControllerTests : IAsyncLifetime
         await SeedDatabaseAsync();
         
         const string existingTodoId = "fe84672e-302e-460e-b292-938ac417ccda";
-        var response = await _client.GetAsync($"/api/todo/{existingTodoId}");
+        var response = await _client.GetAsync($"{TodosBaseUrl}/{existingTodoId}");
         
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var returnedTodo = await response.Content.ReadFromJsonAsync<TodoResponse>();
 
         Assert.NotNull(returnedTodo);
-        
         Assert.Equal("Walk the dog", returnedTodo.Name);
         Assert.Equal("Take the dog for a walk", returnedTodo.Description);
         Assert.False(returnedTodo.Completed);
@@ -114,15 +131,14 @@ public class TodoControllerTests : IAsyncLifetime
             new DateTimeOffset(2025, 09, 06, 10, 55, 12, TimeSpan.Zero), 
             returnedTodo.CreatedAt);
         Assert.Equal(
-            new DateTimeOffset(2025, 09, 06, 10, 55, 12, TimeSpan.Zero),
+            new DateTimeOffset(2025, 09, 07, 12, 12, 38, TimeSpan.Zero),
             returnedTodo.UpdatedAt);
     }
     
-
     [Fact]
     public async Task GetTodoReturnsNotFound_WhenRandomId()
     {
-        var response = await _client.GetAsync($"api/Todo/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"{TodosBaseUrl}/{Guid.NewGuid()}");
         
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -136,7 +152,7 @@ public class TodoControllerTests : IAsyncLifetime
             Description = "Take the dog for a walk."
         };
 
-        var response = await _client.PostAsJsonAsync("/api/todo", requestContent);
+        var response = await _client.PostAsJsonAsync(TodosBaseUrl, requestContent);
         
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
@@ -160,8 +176,108 @@ public class TodoControllerTests : IAsyncLifetime
         {
         };
 
-        var response = await _client.PostAsJsonAsync("/api/Todo", requestContent);
+        var response = await _client.PostAsJsonAsync(TodosBaseUrl, requestContent);
         
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(error);
+        Assert.Contains("Name", error.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task CreateTodo_Returns_BadRequest_WhenTooShortDescription()
+    {
+        var requestContent = new CreateTodoRequest()
+        {
+            Name = "Test todo",
+            Description = "ab"
+        };
+
+        var response = await _client.PostAsJsonAsync(TodosBaseUrl, requestContent);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(error);
+        Assert.Contains("Description", error.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task UpdateTodo_Successfully_UpdatesTodo_WhenValid()
+    {
+        await SeedDatabaseAsync();
+        
+        var updateContent = new UpdateTodoRequest()
+        {
+            Name = "Updated name",
+            Description = "Updated description",
+            Completed = true,
+        };
+
+        var response = await _client.PatchAsJsonAsync(
+            $"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda", 
+            updateContent);
+        
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        var getResponseBody =
+            await _client.GetFromJsonAsync<TodoResponse>($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda");
+
+        Assert.NotNull(getResponseBody);
+        Assert.Equal("Updated name", getResponseBody.Name);
+        Assert.Equal("Updated description", getResponseBody.Description);
+        Assert.True(getResponseBody.Completed);
+    }
+
+    [Fact]
+    public async Task UpdateTodo_ReturnsNotFound_WhenTodoDoesNotExist()
+    {
+        var randomId = Guid.NewGuid();
+        var updatedTodo = new UpdateTodoRequest()
+        {
+            Name = "Updated todo",
+            Description = "Test description",
+            Completed = true,
+        };
+        
+        var response = await _client.PatchAsJsonAsync($"{TodosBaseUrl}/{randomId}", updatedTodo);
+        
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateTodo_ReturnsBadRequest_WhenInvalidRequestContent()
+    {
+        var updatedTodo = new UpdateTodoRequest()
+        {
+        }; 
+        
+        var response = await _client.PatchAsJsonAsync($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda", updatedTodo);
+        
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteTodo_Returns_NotFound_ForNonExistentTodo()
+    {
+        var randomId = Guid.NewGuid();
+        var response = await _client.DeleteAsync($"{TodosBaseUrl}/{randomId}");
+        
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteTodo_Deletes_ExistingTodo()
+    {
+        await SeedDatabaseAsync();
+        
+        var deleteResponse = await _client.DeleteAsync($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda");
+        
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var getResponse = await _client.GetAsync($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda");
+        
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 }
