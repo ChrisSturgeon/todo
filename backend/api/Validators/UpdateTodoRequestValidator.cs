@@ -9,8 +9,10 @@ public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoRequest>
     {
         RuleFor(u => u.Name)
             .NotEmpty()
+            .When(n => !string.IsNullOrWhiteSpace(n.Name))
             .WithMessage("Todo name is required")
             .Length(3, 50)
+            .When(n => !string.IsNullOrWhiteSpace(n.Name))
             .WithMessage("Todo name must be between 3 and 50 characters");
 
         RuleFor(u => u.Description)

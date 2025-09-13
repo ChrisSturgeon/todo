@@ -12,8 +12,6 @@ public class ReorderTodoDtoValidator : AbstractValidator<ReorderTodoDto>
             .WithMessage("Todo Id is required");
 
         RuleFor(x => x.Position)
-            .NotEmpty()
-            .WithMessage("Position is required")
             .GreaterThanOrEqualTo(0)
             .WithMessage("Position must be greater than or equal to 0");
     }
