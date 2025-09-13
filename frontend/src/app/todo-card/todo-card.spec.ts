@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Draggable } from './todo-card';
+import { TodoCard } from './todo-card';
 
 describe('Draggable', () => {
-  let component: Draggable;
-  let fixture: ComponentFixture<Draggable>;
+  let component: TodoCard;
+  let fixture: ComponentFixture<TodoCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Draggable],
+      imports: [TodoCard],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Draggable);
+    fixture = TestBed.createComponent(TodoCard);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

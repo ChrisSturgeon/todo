@@ -1,5 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { TodoService } from '../todo-service/todo.service';
 
 @Component({
@@ -12,17 +17,25 @@ export class NewTodoForm {
   private todoService = inject(TodoService);
 
   public newTodoForm = new FormGroup({
-    name: new FormControl(''),
+    name: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(50),
+    ]),
   });
 
   public submitNewTodo() {
     const todoName = this.newTodoForm.value.name;
 
-    if (todoName && todoName.trim().length > 0) {
-      this.todoService.createTodo(todoName).subscribe(() => {
+    if (this.newTodoForm.valid) {
+      this.todoService.createTodo(todoName!).subscribe(() => {
         this.todoService.triggerRefresh();
         this.newTodoForm.reset();
       });
     }
+  }
+
+  get name() {
+    return this.newTodoForm.get('name');
   }
 }

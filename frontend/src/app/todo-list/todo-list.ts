@@ -27,8 +27,8 @@ export class TodoList implements OnInit, OnDestroy {
     this.isLoading = true;
     this.subscription.add(
       this.todoService.todos$.subscribe({
-        next: (todos) => {
-          this.todos = todos;
+        next: (todosResponse) => {
+          this.todos = todosResponse.items;
           this.isLoading = false;
         },
         error: (err) => {

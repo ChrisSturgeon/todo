@@ -3,6 +3,19 @@
   <form [formGroup]="newTodoForm" (submit)="submitNewTodo()">
     <label for="name">Name</label>
     <input id="name" type="text" formControlName="name" />
+    @if (name?.invalid && (name?.dirty || name?.touched)) {
+    <div class="alert">
+      <div>
+        @if (name?.hasError('required')) {
+        <p>Name is required.</p>
+        } @if(name?.hasError('minlength')) {
+        <p>Name must be at least 3 characters</p>
+        } @if (name?.hasError('maxlength')) {
+        <p>Name must be 50 characters or less</p>
+        }
+      </div>
+    </div>
+    }
     <button type="submit">Add</button>
   </form>
 </section>

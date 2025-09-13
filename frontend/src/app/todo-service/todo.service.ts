@@ -12,6 +12,7 @@ import {
 import type { Todo } from '../../types/api/todo.model';
 import { ReorderTodoDto } from '../../types/api/reorderTodoDto.model';
 import { ReorderTodosDto } from '../../types/api/reorderTodosDto.model';
+import { TodosResponse } from '../../types/api/todosResponse.model';
 
 @Injectable({
   providedIn: 'root',
@@ -30,18 +31,18 @@ export class TodoService {
     this.refreshTrigger$.next();
   }
 
-  public todos$: Observable<Todo[]> = this.refreshTrigger$.pipe(
+  public todos$: Observable<TodosResponse> = this.refreshTrigger$.pipe(
     startWith(undefined),
-    switchMap(() => this.httpClient.get<Todo[]>(this.baseUrl)),
+    switchMap(() => this.httpClient.get<TodosResponse>(this.baseUrl)),
     shareReplay(1)
   );
 
   /**
    * Retrieves all todos from the API.
-   * @returns An Observable emitting an array of Todo items.
+   * @returns An Observable emitting a todosReponse object.
    */
-  public fetchTodos(): Observable<Todo[]> {
-    return this.httpClient.get<Todo[]>(this.baseUrl);
+  public fetchTodos(): Observable<TodosResponse> {
+    return this.httpClient.get<TodosResponse>(this.baseUrl);
   }
 
   /**

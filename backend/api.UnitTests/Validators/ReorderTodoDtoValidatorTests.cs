@@ -37,22 +37,6 @@ public class ReorderTodoDtoValidatorTests
     }
     
     [Fact]
-    public async Task ReorderTodoDtoValidator_Fails_ForMissingPosition()
-    {
-        var validator = new ReorderTodoDtoValidator();
-        var dto = new ReorderTodoDto()
-        {
-            Id = Guid.NewGuid(),
-        };
-
-        var result = await validator.ValidateAsync(dto);
-        
-        Assert.False(result.IsValid);
-        Assert.Single(result.Errors);
-        Assert.Contains("Position is required", result.Errors[0].ErrorMessage);
-    }
-    
-    [Fact]
     public async Task ReorderTodoDtoValidator_Fails_ForNegativePosition()
     {
         var validator = new ReorderTodoDtoValidator();

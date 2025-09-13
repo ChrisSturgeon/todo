@@ -15,15 +15,11 @@ export class TodoCard {
   public todo = input.required<Todo>();
 
   public toggleDone() {
-    console.log('todo was completed', this.todo().completed);
     this.todo().completed = !this.todo().completed;
-    console.log('todo is now: ', this.todo().completed);
-
     this.todoService.updateTodo(this.todo().id, this.todo()).subscribe({
-      next: () => {
-        console.log('Todo updated');
-      },
+      next: () => {},
       error: (err) => {
+        this.todo().completed = !this.todo().completed;
         console.error('Error updating todo: ', err);
       },
     });
