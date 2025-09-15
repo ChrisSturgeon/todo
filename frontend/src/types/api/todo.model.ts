@@ -1,7 +1,7 @@
 export type Todo = {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   completed: boolean;
   position: number;
   createdAt: string;

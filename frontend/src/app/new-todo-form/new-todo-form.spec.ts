@@ -120,50 +120,40 @@ describe('NewTodoForm', () => {
     });
   });
 
-  describe('template validation messages', () => {
-    it('should show "Name is required" when empty and touched', () => {
-      const input: HTMLInputElement =
-        fixture.nativeElement.querySelector('#name');
-      input.value = '';
-      input.dispatchEvent(new Event('input'));
+  describe('template valiation messages', () => {
+    const testCases = [
+      {
+        value: '',
+        expectedMessage: 'Name is required',
+        errorKey: 'required',
+      },
+      {
+        value: 'ab',
+        expectedMessage: 'Name must be at least 3 characters',
+        errorKey: 'minlength',
+      },
+      {
+        value: 'a'.repeat(51),
+        expectedMessage: 'Name must be 50 characters or less',
+        errorKey: 'maxlength',
+      },
+    ];
 
-      component.name?.markAsTouched();
-      fixture.detectChanges();
+    testCases.forEach(({ value, expectedMessage, errorKey }) => {
+      it(`should show ${expectedMessage} when input is ${value}`, () => {
+        const input: HTMLInputElement =
+          fixture.nativeElement.querySelector('#name');
 
-      const alertText: HTMLElement =
-        fixture.nativeElement.querySelector('.alert p').textContent;
+        input.value = value;
+        input.dispatchEvent(new Event('input'));
 
-      expect(alertText).toContain('Name is required');
-    });
+        component.name?.markAsTouched();
+        fixture.detectChanges();
 
-    it('should show "Name must be at least 3 characters" when touched less than 3', () => {
-      const input: HTMLInputElement =
-        fixture.nativeElement.querySelector('#name');
-      input.value = 'ab';
-      input.dispatchEvent(new Event('input'));
-
-      component.name?.markAsTouched();
-      fixture.detectChanges();
-
-      const alertText: HTMLElement =
-        fixture.nativeElement.querySelector('.alert p').textContent;
-
-      expect(alertText).toContain('Name must be at least 3 characters');
-    });
-
-    it('should show "Name must be 50 characters or less" when touched and greater than 50', () => {
-      const input: HTMLInputElement =
-        fixture.nativeElement.querySelector('#name');
-      input.value = 'a'.repeat(51);
-      input.dispatchEvent(new Event('input'));
-
-      component.name?.markAsTouched();
-      fixture.detectChanges();
-
-      const alertText =
-        fixture.nativeElement.querySelector('.alert p').textContent;
-
-      expect(alertText).toContain('Name must be 50 characters or less');
+        const alertText =
+          fixture.nativeElement.querySelector('.alert p')?.textContent;
+        expect(alertText).toContain(expectedMessage);
+      });
     });
   });
 });

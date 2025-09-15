@@ -13,8 +13,9 @@ export class DeleteButton {
   public todoId = input.required<string>();
 
   public deleteTodo() {
-    this.todoService.deleteTodo(this.todoId()).subscribe(() => {
-      this.todoService.triggerRefresh();
+    this.todoService.deleteTodo(this.todoId()).subscribe({
+      next: () => this.todoService.triggerRefresh(),
+      error: (err: any) => console.error('Error deleting todo:', err),
     });
   }
 }

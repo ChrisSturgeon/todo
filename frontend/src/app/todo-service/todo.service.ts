@@ -27,7 +27,7 @@ export class TodoService {
     return this.refreshTrigger$.asObservable();
   }
 
-  public triggerRefresh() {
+  public triggerRefresh(): void {
     this.refreshTrigger$.next();
   }
 
@@ -54,8 +54,8 @@ export class TodoService {
     return this.httpClient.post<Todo>(this.baseUrl, { name: todoName });
   }
 
-  public updateTodo(id: string, todo: Partial<Todo>) {
-    return this.httpClient.patch(`${this.baseUrl}/${id}`, todo);
+  public updateTodo(id: string, todo: Partial<Todo>): Observable<void> {
+    return this.httpClient.patch<void>(`${this.baseUrl}/${id}`, todo);
   }
 
   /**
@@ -63,8 +63,8 @@ export class TodoService {
    * @param id The Id of the todo to delete.
    * @returns An Observable that emits the response of the API after deleting the todo.
    */
-  public deleteTodo(id: string): Observable<Todo> {
-    return this.httpClient.delete<Todo>(`${this.baseUrl}/${id}`);
+  public deleteTodo(id: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }
 
   /**
