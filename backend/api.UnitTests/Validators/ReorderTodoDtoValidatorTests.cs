@@ -9,7 +9,7 @@ public class ReorderTodoDtoValidatorTests
     public async Task ReorderTodoDtoValidator_Passes_ForAValidDto()
     {
         var validator = new ReorderTodoDtoValidator();
-        var dto = new ReorderTodoDto()
+        var dto = new TodoPosition()
         {
             Id = Guid.NewGuid(),
             Position = 0,
@@ -24,7 +24,7 @@ public class ReorderTodoDtoValidatorTests
     public async Task ReorderTodoDtoValidator_Fails_ForMissingId()
     {
         var validator = new ReorderTodoDtoValidator();
-        var dto = new ReorderTodoDto()
+        var dto = new TodoPosition()
         {
             Position = 0,
         };
@@ -40,7 +40,7 @@ public class ReorderTodoDtoValidatorTests
     public async Task ReorderTodoDtoValidator_Fails_ForNegativePosition()
     {
         var validator = new ReorderTodoDtoValidator();
-        var dto = new ReorderTodoDto()
+        var dto = new TodoPosition()
         {
             Id = Guid.NewGuid(),
             Position = -1,

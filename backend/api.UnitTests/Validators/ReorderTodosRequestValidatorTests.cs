@@ -11,7 +11,7 @@ public class ReorderTodosRequestValidatorTests
         var validator = new ReorderTodosRequestValidator();
         var request = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new ()
                 {
@@ -59,7 +59,7 @@ public class ReorderTodosRequestValidatorTests
         var validator = new ReorderTodosRequestValidator();
         var request = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new ()
                 {
@@ -87,7 +87,7 @@ public class ReorderTodosRequestValidatorTests
         var validator = new ReorderTodosRequestValidator();
         var request = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new ()
                 {

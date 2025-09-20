@@ -13,7 +13,7 @@ public class ReorderTodosRequestValidator : AbstractValidator<ReorderTodosReques
             .WithMessage("Todos is required")
             .Must(t =>
             {
-                var list = t as IList<ReorderTodoDto> ?? t.ToList();
+                var list = t as IList<TodoPosition> ?? t.ToList();
                 return list.Count > 0;
             }).WithMessage("Todos is empty");
 
@@ -23,7 +23,7 @@ public class ReorderTodosRequestValidator : AbstractValidator<ReorderTodosReques
         RuleFor(x => x.Todos)
             .Must(t =>
             {
-                var list = t as IList<ReorderTodoDto> ?? t.ToList();
+                var list = t as IList<TodoPosition> ?? t.ToList();
                 return list.Select(i => i.Id).Distinct().Count() == list.Count;
             })
             .WithMessage("Todos must not contain duplicate ids");
@@ -31,7 +31,7 @@ public class ReorderTodosRequestValidator : AbstractValidator<ReorderTodosReques
         RuleFor(x => x.Todos)
             .Must(t =>
             {
-                var list = t as IList<ReorderTodoDto> ?? t.ToList();
+                var list = t as IList<TodoPosition> ?? t.ToList();
                 return list.Select(i => i.Position).Distinct().Count() == list.Count;
             })
             .WithMessage("Todos must not contain duplicate positions");

@@ -10,5 +10,5 @@ public interface ITodoService
     Task<Todo> CreateTodoAsync(string name, string description);
     Task<bool> UpdateTodoAsync(Guid id, string? name, string? description, bool? isCompleted);
     Task<bool> DeleteTodoAsync(Guid id);
-    Task<bool> ReorderTodosAsync(IEnumerable<ReorderTodoDto> reorderDtos);
+    Task<bool> ReorderTodosAsync(IEnumerable<TodoPosition> reorderDtos);
 }

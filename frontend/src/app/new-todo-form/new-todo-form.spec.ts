@@ -3,7 +3,7 @@ import { TodoService } from '../todo-service/todo.service';
 import { of } from 'rxjs';
 import { NewTodoForm } from './new-todo-form';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Todo } from '../../types/api/todo.model';
+import { TodoResponse } from '../../../api-types/api.types';
 
 describe('NewTodoForm', () => {
   let component: NewTodoForm;
@@ -80,7 +80,7 @@ describe('NewTodoForm', () => {
 
   describe('submitNewTodo', () => {
     beforeEach(() => {
-      const fakeTodo: Todo = {
+      const fakeTodo: TodoResponse = {
         id: '123',
         name: 'Test todo',
         description: '',

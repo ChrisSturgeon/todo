@@ -291,7 +291,7 @@ public class TodoControllerTests : IAsyncLifetime
         
         var requestBody = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new()
                 {
@@ -318,7 +318,7 @@ public class TodoControllerTests : IAsyncLifetime
         
         var requestBody = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new()
                 {
@@ -345,7 +345,7 @@ public class TodoControllerTests : IAsyncLifetime
         
         var requestBody = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new()
                 {
@@ -372,7 +372,7 @@ public class TodoControllerTests : IAsyncLifetime
         
         var requestBody = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new()
                 {
@@ -399,7 +399,7 @@ public class TodoControllerTests : IAsyncLifetime
         
         var requestBody = new ReorderTodosRequest()
         {
-            Todos = new List<ReorderTodoDto>()
+            Todos = new List<TodoPosition>()
             {
                 new()
                 {

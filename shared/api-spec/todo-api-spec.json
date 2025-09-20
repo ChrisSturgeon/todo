@@ -279,6 +279,9 @@
   "components": {
     "schemas": {
       "CreateTodoRequest": {
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -316,7 +319,22 @@
           }
         }
       },
-      "ReorderTodoDto": {
+      "ReorderTodosRequest": {
+        "type": "object",
+        "properties": {
+          "todos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodoPosition"
+            }
+          }
+        }
+      },
+      "TodoPosition": {
+        "required": [
+          "id",
+          "position"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -329,18 +347,11 @@
           }
         }
       },
-      "ReorderTodosRequest": {
-        "type": "object",
-        "properties": {
-          "todos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ReorderTodoDto"
-            }
-          }
-        }
-      },
       "TodoResponse": {
+        "required": [
+          "id",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -372,6 +383,9 @@
         }
       },
       "TodosResponse": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "properties": {
           "items": {

@@ -3,8 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TodoList } from './todo-list';
 import { TodoService } from '../todo-service/todo.service';
 import { of, Subject } from 'rxjs';
-import { TodosResponse } from '../../types/api/todosResponse.model';
-
+import { TodosResponse } from '../../../api-types/api.types';
 describe('TodoList', () => {
   let component: TodoList;
   let fixture: ComponentFixture<TodoList>;

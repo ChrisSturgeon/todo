@@ -6,8 +6,8 @@ import {
   moveItemInArray,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import type { Todo } from '../../types/api/todo.model';
 import { TodoCard } from '../todo-card/todo-card';
+import type { TodoResponse } from '../../../api-types/api.types';
 
 @Component({
   selector: 'app-todo-list',
@@ -19,7 +19,7 @@ export class TodoList implements OnInit, OnDestroy {
   private todoService = inject(TodoService);
   private subscription = new Subscription();
 
-  public todos: Todo[] = [];
+  public todos: TodoResponse[] = [];
   public isLoading = true;
   public isError = false;
 
@@ -43,7 +43,7 @@ export class TodoList implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  public drop(event: CdkDragDrop<Todo[]>) {
+  public drop(event: CdkDragDrop<TodoResponse[]>) {
     const originalOrder = [...this.todos];
 
     moveItemInArray(this.todos, event.previousIndex, event.currentIndex);

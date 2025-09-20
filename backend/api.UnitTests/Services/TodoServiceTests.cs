@@ -517,11 +517,11 @@ public class TodoServiceTests
         var todo2Guid = new Guid("7faf2283-162f-4d65-adb4-288f4cd23d41");
         var todo3Guid = new Guid("790eeae5-ce08-43ef-ba03-ebc55f00cd10");
         
-        var reorderedTodos = new List<ReorderTodoDto>
+        var reorderedTodos = new List<TodoPosition>
         {
-            new ReorderTodoDto { Id = todo1Guid, Position = 2 },
-            new ReorderTodoDto { Id = todo2Guid, Position = 0 },
-            new ReorderTodoDto { Id = todo3Guid, Position = 1 },
+            new TodoPosition { Id = todo1Guid, Position = 2 },
+            new TodoPosition { Id = todo2Guid, Position = 0 },
+            new TodoPosition { Id = todo3Guid, Position = 1 },
         };
         
         var mockRepo = new Mock<ITodoRepository>();
@@ -548,11 +548,11 @@ public class TodoServiceTests
             new Todo { Id = todo3Guid, Name = "Baz", Position = 2 },
         };
         
-        var todosToUpdate = new List<ReorderTodoDto>
+        var todosToUpdate = new List<TodoPosition>
         {
-            new ReorderTodoDto { Id = todo1Guid, Position = 2 },
-            new ReorderTodoDto { Id = todo2Guid, Position = 0 },
-            new ReorderTodoDto { Id = todo3Guid, Position = 1 },
+            new TodoPosition { Id = todo1Guid, Position = 2 },
+            new TodoPosition { Id = todo2Guid, Position = 0 },
+            new TodoPosition { Id = todo3Guid, Position = 1 },
         };
         
         var mockRepo = new Mock<ITodoRepository>();

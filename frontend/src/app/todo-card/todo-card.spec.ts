@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TodoCard } from './todo-card';
 import { TodoService } from '../todo-service/todo.service';
-import type { Todo } from '../../types/api/todo.model';
+import { TodoResponse } from '../../../api-types/api.types';
 import { of, throwError } from 'rxjs';
 
 describe('Draggable', () => {
@@ -9,7 +9,7 @@ describe('Draggable', () => {
   let fixture: ComponentFixture<TodoCard>;
   let mockTodoService: jasmine.SpyObj<TodoService>;
 
-  const mockTodo: Todo = {
+  const mockTodo: TodoResponse = {
     id: '1',
     name: 'Test todo',
     description: 'Just a test',

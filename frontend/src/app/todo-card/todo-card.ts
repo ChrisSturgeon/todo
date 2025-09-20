@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { DeleteButton } from '../delete-button/delete-button';
-import { Todo } from '../../types/api/todo.model';
 import { TodoService } from '../todo-service/todo.service';
+import type { TodoResponse } from '../../../api-types/api.types';
 
 @Component({
   selector: 'app-todo-card',
@@ -12,7 +12,7 @@ import { TodoService } from '../todo-service/todo.service';
 })
 export class TodoCard {
   private todoService = inject(TodoService);
-  public todo = input.required<Todo>();
+  public todo = input.required<TodoResponse>();
 
   public toggleDone() {
     this.todo().completed = !this.todo().completed;

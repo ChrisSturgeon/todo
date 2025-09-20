@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace api.Validators;
 
-public class ReorderTodoDtoValidator : AbstractValidator<ReorderTodoDto>
+public class ReorderTodoDtoValidator : AbstractValidator<TodoPosition>
 {
     public ReorderTodoDtoValidator()
     {

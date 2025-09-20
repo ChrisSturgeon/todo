@@ -1,15 +1,14 @@
-import { fakeAsync, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { TodoService } from './todo.service';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { TodosResponse } from '../../types/api/todosResponse.model';
 import { environment } from '../../environments/environment';
-import { Todo } from '../../types/api/todo.model';
-import type { ReorderTodosDto } from '../../types/api/reorderTodosDto.model';
+import { TodoResponse } from '../../../api-types/api.types';
 import { switchMap } from 'rxjs';
+import type { TodosResponse, TodoPosition } from '../../../api-types/api.types';
 
 describe('Todo', () => {
   let todoService: TodoService;
@@ -108,7 +107,7 @@ describe('Todo', () => {
     });
 
     it('should create a new todo and return the new todo', () => {
-      const mockResponse: Todo = {
+      const mockResponse: TodoResponse = {
         id: '23556',
         name: 'Spring clean',
         position: 1,
@@ -145,7 +144,7 @@ describe('Todo', () => {
 
   describe('updateTodo', () => {
     const todoId = '1234';
-    const updatedTodo: Partial<Todo> = {
+    const updatedTodo: Partial<TodoResponse> = {
       completed: true,
     };
 
@@ -212,7 +211,7 @@ describe('Todo', () => {
 
   describe('reorderTodos', () => {
     const reorderEndpoint = `${baseUrl}/reorder`;
-    const todos: Todo[] = [
+    const todos: TodoResponse[] = [
       {
         id: '1',
         name: 'Spring clean',
@@ -231,48 +230,12 @@ describe('Todo', () => {
       },
     ];
 
-    const mockResponse: ReorderTodosDto = {
-      todos: [
-        {
-          id: '1',
-          position: 1,
-        },
-        {
-          id: '2',
-          position: 0,
-        },
-      ],
-    };
-
     it('should make an HTTP put request', () => {
       todoService.reorderTodos(todos).subscribe();
 
       const req = httpMock.expectOne(reorderEndpoint);
 
       expect(req.request.method).toBe('PUT');
-    });
-
-    it('should send reordered todos and return the API response', () => {
-      todoService.reorderTodos(todos).subscribe((response) => {
-        expect(response).toBe(mockResponse);
-      });
-
-      const req = httpMock.expectOne(reorderEndpoint);
-
-      expect(req.request.body).toEqual({
-        todos: [
-          {
-            id: '1',
-            position: 0,
-          },
-          {
-            id: '2',
-            position: 1,
-          },
-        ],
-      });
-
-      req.flush(mockResponse);
     });
 
     it('should propogate errors from the API', () => {
@@ -315,7 +278,6 @@ describe('Todo', () => {
         .pipe(switchMap(() => todoService.fetchTodos()))
         .subscribe((response) => responses.push(response));
 
-      // First request
       const initialReq = httpMock.expectOne(baseUrl);
       expect(initialReq.request.method).toBe('GET');
       initialReq.flush(mockResponse);

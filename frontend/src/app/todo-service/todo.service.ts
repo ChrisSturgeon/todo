@@ -9,10 +9,13 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import type { Todo } from '../../types/api/todo.model';
-import { ReorderTodoDto } from '../../types/api/reorderTodoDto.model';
-import { ReorderTodosDto } from '../../types/api/reorderTodosDto.model';
-import { TodosResponse } from '../../types/api/todosResponse.model';
+import {
+  TodosResponse,
+  TodoResponse,
+  CreateTodoRequest,
+  ReorderTodosRequest,
+  TodoPosition,
+} from '../../../api-types/api.types';
 
 @Injectable({
   providedIn: 'root',
@@ -50,11 +53,13 @@ export class TodoService {
    * @param todoName The name of the todo to add
    * @returns Returns an Observable that emits the response from the API after creating a new todo item.
    */
-  public createTodo(todoName: string): Observable<Todo> {
-    return this.httpClient.post<Todo>(this.baseUrl, { name: todoName });
+  public createTodo(todoName: string): Observable<CreateTodoRequest> {
+    return this.httpClient.post<CreateTodoRequest>(this.baseUrl, {
+      name: todoName,
+    });
   }
 
-  public updateTodo(id: string, todo: Partial<Todo>): Observable<void> {
+  public updateTodo(id: string, todo: Partial<TodoResponse>): Observable<void> {
     return this.httpClient.patch<void>(`${this.baseUrl}/${id}`, todo);
   }
 
@@ -72,15 +77,15 @@ export class TodoService {
    * @param todos An array of the reordered todos.
    * @returns Returns an Observable that emits the response of the API after reordering the todos.
    */
-  public reorderTodos(todos: Todo[]): Observable<ReorderTodosDto> {
-    let reorderedTodos: ReorderTodoDto[] = todos.map((todo, index) => {
+  public reorderTodos(todos: TodoResponse[]): Observable<ReorderTodosRequest> {
+    let reorderedTodos: TodoPosition[] = todos.map((todo, index) => {
       return {
         id: todo.id,
         position: index,
       };
     });
 
-    return this.httpClient.put<ReorderTodosDto>(`${this.baseUrl}/reorder`, {
+    return this.httpClient.put<ReorderTodosRequest>(`${this.baseUrl}/reorder`, {
       todos: reorderedTodos,
     });
   }
