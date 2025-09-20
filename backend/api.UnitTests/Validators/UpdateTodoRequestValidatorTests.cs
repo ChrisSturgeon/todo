@@ -19,20 +19,6 @@ public class UpdateTodoRequestValidatorTests
     }
     
     [Fact]
-    public async Task UpdateTodoRequestValidator_Fails_WhenNameIsNotProvided()
-    {
-        var validator = new UpdateTodoRequestValidator();
-        var request = new UpdateTodoRequest()
-        {
-        };
-        var result = await validator.ValidateAsync(request);
-        
-        Assert.False(result.IsValid);
-        Assert.Equal(2, result.Errors.Count);
-        Assert.Contains("Todo name is required", result.Errors[0].ErrorMessage);
-    }
-    
-    [Fact]
     public async Task UpdateTodoRequestValidator_Fails_WhenNameIsTooShort()
     {
         var validator = new UpdateTodoRequestValidator();

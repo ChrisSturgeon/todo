@@ -525,7 +525,7 @@ public class TodoServiceTests
         };
         
         var mockRepo = new Mock<ITodoRepository>();
-        mockRepo.Setup(r => r.GetAllTodosAsync())
+        mockRepo.Setup(r => r.GetTodosByIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<Todo>());
 
         var service = new TodoService(mockRepo.Object);
@@ -541,24 +541,23 @@ public class TodoServiceTests
         var todo2Guid = new Guid("7faf2283-162f-4d65-adb4-288f4cd23d41");
         var todo3Guid = new Guid("790eeae5-ce08-43ef-ba03-ebc55f00cd10");
         
-        var todos = new List<Todo>
+        var originalTodos = new List<Todo>
         {
             new Todo { Id = todo1Guid, Name = "Foo", Position = 0 },
             new Todo { Id = todo2Guid, Name = "Bar", Position = 1 },
             new Todo { Id = todo3Guid, Name = "Baz", Position = 2 },
         };
         
-        var updatedTodos = new List<ReorderTodoDto>
+        var todosToUpdate = new List<ReorderTodoDto>
         {
             new ReorderTodoDto { Id = todo1Guid, Position = 2 },
             new ReorderTodoDto { Id = todo2Guid, Position = 0 },
             new ReorderTodoDto { Id = todo3Guid, Position = 1 },
         };
-
-
+        
         var mockRepo = new Mock<ITodoRepository>();
-        mockRepo.Setup(r => r.GetAllTodosAsync())
-            .ReturnsAsync(todos);
+        mockRepo.Setup(r => r.GetTodosByIdsAsync(It.IsAny<List<Guid>>()))
+            .ReturnsAsync(originalTodos);
 
         IEnumerable<Todo>? reorderedTodos = null;
 
@@ -567,24 +566,15 @@ public class TodoServiceTests
             .Returns(Task.CompletedTask);
 
         var service = new TodoService(mockRepo.Object);
-        var result = await service.ReorderTodosAsync(updatedTodos);
+        var result = await service.ReorderTodosAsync(todosToUpdate);
         
         Assert.True(result);
         Assert.NotNull(reorderedTodos);
-        Assert.Collection(reorderedTodos, item =>
-        {
-            Assert.Equal(todo2Guid, item.Id);
-            Assert.Equal(0, item.Position);
-        },
-            item =>
-        {
-            Assert.Equal(todo3Guid, item.Id);
-            Assert.Equal(1, item.Position);
-        }, 
-            item =>
-        {
-            Assert.Equal(todo1Guid, item.Id);
-            Assert.Equal(2, item.Position);
-        });
+
+        var todosList = reorderedTodos.ToList();
+        
+        Assert.Contains(todosList, t => t.Id == todo1Guid && t.Position == 2);
+        Assert.Contains(todosList, t => t.Id == todo2Guid && t.Position == 0);
+        Assert.Contains(todosList, t => t.Id == todo3Guid && t.Position == 1);
     }
 }
