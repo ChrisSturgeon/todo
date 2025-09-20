@@ -1,14 +1,11 @@
-using System.Reflection;
 using api.Data;
 using api.Repositories;
 using api.Repositories.Interfaces;
 using api.Services;
 using api.Services.Interfaces;
-using api.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,20 +25,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo()
-    {
-        Title = "Todo API",
-        Version = "v1"
-    });
-
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
-});
 
 builder.Services.AddDbContext<TodoDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -58,8 +43,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseCors("AllowAll");
     app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 else
 {
