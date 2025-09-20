@@ -13,7 +13,7 @@ namespace api.IntegrationTests;
 
 public class TodoControllerTests : IAsyncLifetime
 {
-    private const string TodosBaseUrl = "/api/todo";
+    private const string TodosBaseUrl = "/api/v1/todo";
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:16.1")
         .WithDatabase("test_db")
