@@ -100,6 +100,6 @@ public class TodoController : ControllerBase
     {
         var success = await _service.ReorderTodosAsync(request.Todos);
 
-        return success ? NoContent() : NotFound();
+        return success ? NoContent() : BadRequest();
     }
 }

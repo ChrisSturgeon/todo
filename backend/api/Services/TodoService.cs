@@ -92,24 +92,27 @@ public class TodoService : ITodoService
 
     public async Task<bool> ReorderTodosAsync(IEnumerable<ReorderTodoDto> reorderDtos)
     {
-        var allTodos = await GetAllTodosAsync();
+        var reorderList = reorderDtos.ToList();
+        
+        var dtoIds = reorderList.Select(r => r.Id).ToList();
 
-        if (!allTodos.Any())
+        var todos = await _repository.GetTodosByIdsAsync(dtoIds);
+        
+        if (todos.Count != dtoIds.Count)
         {
             return false;
         }
 
-        foreach (var dto in reorderDtos)
-        {
-            var todo = allTodos.FirstOrDefault(t => t.Id == dto.Id);
+        var todoDictionary = todos.ToDictionary(t => t.Id);
 
-            if (todo is null) continue;
-            
+        foreach (var dto in reorderList)
+        {
+            var todo = todoDictionary[dto.Id];
             todo.Position = dto.Position;
             todo.UpdatedAt = DateTimeOffset.UtcNow;
         }
-
-        await _repository.UpdateTodoPositionsAsync(allTodos);
+        
+        await _repository.UpdateTodoPositionsAsync(todos);
 
         return true;
     }

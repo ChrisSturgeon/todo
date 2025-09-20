@@ -249,8 +249,11 @@ public class TodoControllerTests : IAsyncLifetime
     [Fact]
     public async Task UpdateTodo_ReturnsBadRequest_WhenInvalidRequestContent()
     {
+        await SeedDatabaseAsync();
+        
         var updatedTodo = new UpdateTodoRequest()
         {
+            Name = "aa",
         }; 
         
         var response = await _client.PatchAsJsonAsync($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda", updatedTodo);
@@ -279,5 +282,140 @@ public class TodoControllerTests : IAsyncLifetime
         var getResponse = await _client.GetAsync($"{TodosBaseUrl}/fe84672e-302e-460e-b292-938ac417ccda");
         
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReorderTodos_ReturnsNotContentStatus_WhenValid()
+    {
+        await SeedDatabaseAsync();
+        
+        var requestBody = new ReorderTodosRequest()
+        {
+            Todos = new List<ReorderTodoDto>()
+            {
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 1,
+                },
+                new()
+                {
+                    Id = new Guid("a72d3a45-c580-4152-bf3b-67b33b18a3aa"),
+                    Position = 0
+                }
+            }
+        };
+
+        var reorderResponse = await _client.PutAsJsonAsync($"{TodosBaseUrl}/reorder", requestBody);
+
+        Assert.Equal(HttpStatusCode.NoContent, reorderResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReorderTodos_ReturnsBadRequest_WhenDuplicateTodoIds()
+    {
+        await SeedDatabaseAsync();
+        
+        var requestBody = new ReorderTodosRequest()
+        {
+            Todos = new List<ReorderTodoDto>()
+            {
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 1,
+                },
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 0
+                }
+            }
+        };
+
+        var reorderResponse = await _client.PutAsJsonAsync($"{TodosBaseUrl}/reorder", requestBody);
+        
+        Assert.Equal(HttpStatusCode.BadRequest, reorderResponse.StatusCode);
+    }
+    
+    [Fact]
+    public async Task ReorderTodos_ReturnsBadRequest_WhenDuplicatePositions()
+    {
+        await SeedDatabaseAsync();
+        
+        var requestBody = new ReorderTodosRequest()
+        {
+            Todos = new List<ReorderTodoDto>()
+            {
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 0,
+                },
+                new()
+                {
+                    Id = new Guid("a72d3a45-c580-4152-bf3b-67b33b18a3aa"),
+                    Position = 0
+                }
+            }
+        };
+
+        var reorderResponse = await _client.PutAsJsonAsync($"{TodosBaseUrl}/reorder", requestBody);
+        
+        Assert.Equal(HttpStatusCode.BadRequest, reorderResponse.StatusCode);
+    }
+    
+    [Fact]
+    public async Task ReorderTodos_ReturnsBadRequest_WhenNegativePosition()
+    {
+        await SeedDatabaseAsync();
+        
+        var requestBody = new ReorderTodosRequest()
+        {
+            Todos = new List<ReorderTodoDto>()
+            {
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = -1,
+                },
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 0
+                }
+            }
+        };
+
+        var reorderResponse = await _client.PutAsJsonAsync($"{TodosBaseUrl}/reorder", requestBody);
+        
+        Assert.Equal(HttpStatusCode.BadRequest, reorderResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReorderTodos_ReturnsBadRequest_IfTodoDoesNotExist()
+    {
+        await SeedDatabaseAsync();
+        
+        var requestBody = new ReorderTodosRequest()
+        {
+            Todos = new List<ReorderTodoDto>()
+            {
+                new()
+                {
+                    Id = new Guid("0acd6977-89ac-40da-a069-8abd63f4feab"),
+                    Position = 1,
+                },
+                new()
+                {
+                    Id = new Guid("fe84672e-302e-460e-b292-938ac417ccda"),
+                    Position = 0
+                }
+            }
+        };
+
+        var response = await _client.PutAsJsonAsync($"{TodosBaseUrl}/reorder", requestBody);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }

@@ -24,6 +24,13 @@ public class TodoRepository : ITodoRepository
         return await _context.Todos.FindAsync(id);
     }
 
+    public async Task<List<Todo>> GetTodosByIdsAsync(IEnumerable<Guid> ids)
+    {
+        return await _context.Todos
+            .Where(t => ids.Contains(t.Id))
+            .ToListAsync();
+    }
+
     public async Task AddTodoAsync(Todo todo)
     {
         await _context.Todos.AddAsync(todo);
