@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TodoService } from '../todo-service/todo.service';
-import { of } from 'rxjs';
-import { NewTodoForm } from './new-todo-form';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TodoResponse } from '../../../api-types/api.types';
+import { of } from 'rxjs';
+import { TodoService } from '../../services/todo-service/todo.service';
+import { NewTodoForm } from './new-todo-form';
+import type { TodoResponse } from '@api-types/todo/todo.types';
 
 describe('NewTodoForm', () => {
   let component: NewTodoForm;

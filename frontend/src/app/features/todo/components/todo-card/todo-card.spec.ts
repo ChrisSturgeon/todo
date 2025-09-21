@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TodoCard } from './todo-card';
-import { TodoService } from '../todo-service/todo.service';
-import { TodoResponse } from '../../../api-types/api.types';
 import { of, throwError } from 'rxjs';
+import { TodoCard } from './todo-card';
+import { TodoService } from '../../services/todo-service/todo.service';
+import { TodoResponse } from '@api-types/todo/todo.types';
 
 describe('Draggable', () => {
   let component: TodoCard;

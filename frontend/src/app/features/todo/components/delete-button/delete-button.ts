@@ -1,5 +1,5 @@
 import { Component, inject, input } from '@angular/core';
-import { TodoService } from '../todo-service/todo.service';
+import { TodoService } from '../../services/todo-service/todo.service';
 
 @Component({
   selector: 'app-delete-button',

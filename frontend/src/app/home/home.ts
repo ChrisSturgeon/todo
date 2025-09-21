@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { NewTodoForm } from '../new-todo-form/new-todo-form';
-import { TodoList } from '../todo-list/todo-list';
+import { NewTodoForm } from '../features/todo/components/new-todo-form/new-todo-form';
+import { TodoList } from '../features/todo/components/todo-list/todo-list';
 
 @Component({
   selector: 'app-home',

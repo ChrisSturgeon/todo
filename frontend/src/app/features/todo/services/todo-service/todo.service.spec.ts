@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { TodoService } from './todo.service';
+import { switchMap } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { environment } from '../../environments/environment';
-import { TodoResponse } from '../../../api-types/api.types';
-import { switchMap } from 'rxjs';
-import type { TodosResponse, TodoPosition } from '../../../api-types/api.types';
+import { environment } from '@env/environment';
+import { TodosResponse, TodoResponse } from '@api-types/todo/todo.types';
 
 describe('Todo', () => {
   let todoService: TodoService;

@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { TodoService } from '../todo-service/todo.service';
+import { TodoService } from '../../services/todo-service/todo.service';
 import { Subscription } from 'rxjs';
 import {
   CdkDragDrop,
@@ -7,7 +7,7 @@ import {
   CdkDropList,
 } from '@angular/cdk/drag-drop';
 import { TodoCard } from '../todo-card/todo-card';
-import type { TodoResponse } from '../../../api-types/api.types';
+import type { TodoResponse } from '@api-types/todo/todo.types';
 
 @Component({
   selector: 'app-todo-list',

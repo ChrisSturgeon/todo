@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteButton } from './delete-button';
-import { TodoService } from '../todo-service/todo.service';
+import { TodoService } from '../../services/todo-service/todo.service';
 import { of, throwError } from 'rxjs';
 
 describe('DeleteButton', () => {

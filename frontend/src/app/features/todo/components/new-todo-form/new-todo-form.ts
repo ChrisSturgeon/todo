@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
+import { TodoService } from '../../services/todo-service/todo.service';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TodoService } from '../todo-service/todo.service';
 
 @Component({
   selector: 'app-new-todo-form',

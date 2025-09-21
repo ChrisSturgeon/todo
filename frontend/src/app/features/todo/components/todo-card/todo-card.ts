@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { DeleteButton } from '../delete-button/delete-button';
-import { TodoService } from '../todo-service/todo.service';
-import type { TodoResponse } from '../../../api-types/api.types';
+import { TodoService } from '../../services/todo-service/todo.service';
+import type { TodoResponse } from '@api-types/todo/todo.types';
 
 @Component({
   selector: 'app-todo-card',

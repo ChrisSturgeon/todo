@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from '@env/environment';
 import {
   BehaviorSubject,
   Observable,
-  delay,
   shareReplay,
   startWith,
   switchMap,
@@ -15,7 +14,7 @@ import {
   CreateTodoRequest,
   ReorderTodosRequest,
   TodoPosition,
-} from '../../../api-types/api.types';
+} from '@api-types/todo/todo.types';
 
 @Injectable({
   providedIn: 'root',
@@ -26,10 +25,17 @@ export class TodoService {
 
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
+  /**
+   * Returns the triggerRefresh behaviour subject as an observable.
+   */
   public get refresh$() {
     return this.refreshTrigger$.asObservable();
   }
 
+  /**
+   * Calls the next() function on the triggerRefresh behaviour subject
+   * to retrieve the latest todos set from the API.
+   */
   public triggerRefresh(): void {
     this.refreshTrigger$.next();
   }
@@ -59,6 +65,12 @@ export class TodoService {
     });
   }
 
+  /**
+   * Updates a todo.
+   * @param id The unique identifier of the todo to update.
+   * @param todo the complete or partial body of the todo to update.
+   * @returns An Observable that emites the response of the API after updating the todo.
+   */
   public updateTodo(id: string, todo: Partial<TodoResponse>): Observable<void> {
     return this.httpClient.patch<void>(`${this.baseUrl}/${id}`, todo);
   }

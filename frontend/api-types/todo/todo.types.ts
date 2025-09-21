@@ -1,4 +1,4 @@
-import { components, paths } from './schema';
+import { components } from '../schema';
 
 export type TodosResponse = components['schemas']['TodosResponse'];
 export type TodoResponse = components['schemas']['TodoResponse'];
